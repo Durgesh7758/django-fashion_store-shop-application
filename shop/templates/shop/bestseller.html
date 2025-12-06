@@ -1,0 +1,126 @@
+{% extends 'shop/basic.html' %}
+
+{% block css %}
+<style>
+/* Grid layout: 2 products per row */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 products per row */
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Product card */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Product image */
+.product-img {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #f8f8f8;
+}
+
+/* Product info */
+.product-name {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #222;
+}
+
+.product-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: flex-start; /* aligned left */
+  align-items: center;
+  gap: 10px;
+}
+
+.price {
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.view-btn {
+  padding: 5px 10px;
+  border: 1px solid #222;
+  color: #222;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.add-btn {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: none;
+  background: #222;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Bestseller Products</h2>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+
+            <!-- Carousel for multiple images -->
+            <div id="carousel{{ product.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if product.image %}
+                    <div class="carousel-item active">
+                        <img src="{{ product.image.url }}" class="product-img" alt="{{ product.product_name }}">
+                    </div>
+                    {% endif %}
+                    {% for img in product.images.all %}
+                    <div class="carousel-item {% if not product.image %}{% if forloop.first %}active{% endif %}{% endif %}">
+                        <img src="{{ img.image.url }}" class="product-img" alt="{{ product.product_name }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ product.id }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ product.id }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+
+            <h3 class="product-name">{{ product.product_name }}</h3>
+            <p class="product-desc">{{ product.desc|truncatewords:15 }}</p>
+
+            <div class="price-row">
+                <span class="price">₹{{ product.price }}</span>
+            </div>
+
+            <a href="{% url 'shop:product_detail' product.id %}" class="view-btn">View</a>
+            <a href="{% url 'shop:add_to_cart' product.id %}" class="add-btn">Add to Cart</a>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

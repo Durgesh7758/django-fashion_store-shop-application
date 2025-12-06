@@ -1,0 +1,36 @@
+{% extends 'shop/basic.html' %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <h2>Order #{{ order.id }}</h2>
+    <p>Tracking Number: <strong>{{ order.tracking_number|default:"-" }}</strong></p>
+    <p>Status: <strong>{{ order.status }}</strong></p>
+    <p>Total Amount: <strong>₹{{ order.total_amount }}</strong></p>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td><img src="{{ item.product.image.url }}" alt="{{ item.product.product_name }}" width="50"></td>
+                <td>{{ item.product.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{{ item.quantity|mul:item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'shop:home' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+</div>
+{% endblock %}

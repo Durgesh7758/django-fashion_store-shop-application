@@ -1,0 +1,83 @@
+{% extends 'shop/basic.html' %}
+{% block title %}Checkout{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+
+    <h2>Select Delivery Address</h2>
+
+    <div id="savedAddressSection" style="display:block;">
+        {% if saved_addresses %}
+            <h4 class="mt-3">Saved Addresses</h4>
+
+            <form method="POST" id="addressForm">
+                {% csrf_token %}
+                {% for addr in saved_addresses %}
+                <div class="border p-3 mb-3 rounded">
+                    <input type="radio" name="selected_address" value="{{ addr.id }}" required>
+                    <strong>{{ addr.name }}</strong> — {{ addr.phone }} <br>
+                    {{ addr.address }}, {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                </div>
+                {% endfor %}
+
+                <button type="button" id="showNewBtn" class="btn btn-outline-primary w-100 mb-2">
+                    Add New Address
+                </button>
+
+                <button class="btn btn-primary w-100 mt-2">
+                    Deliver to this Address
+                </button>
+            </form>
+        {% else %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function(){
+                    document.getElementById("savedAddressSection").style.display = "none";
+                    document.getElementById("newAddressForm").style.display = "block";
+                });
+            </script>
+        {% endif %}
+    </div>
+
+    <form method="POST" id="newAddressForm" style="display:none;">
+        {% csrf_token %}
+        <h4 class="mt-4">Add New Address</h4>
+
+        <label>Name</label>
+        <input name="name" class="form-control" required>
+
+        <label class="mt-2">Email</label>
+        <input name="email" type="email" class="form-control" required>
+
+        <label class="mt-2">Phone</label>
+        <input name="phone" class="form-control" required>
+
+        <label class="mt-2">Address</label>
+        <textarea name="address" class="form-control" required></textarea>
+
+        <label class="mt-2">City</label>
+        <input name="city" class="form-control" required>
+
+        <label class="mt-2">State</label>
+        <input name="state" class="form-control" required>
+
+        <label class="mt-2">Pincode</label>
+        <input name="pincode" class="form-control" required>
+
+        <button class="btn btn-primary mt-3 w-100">Save & Deliver</button>
+        <button type="button" id="backBtn" class="btn btn-secondary mt-2 w-100">Back to Saved Addresses</button>
+    </form>
+
+</div>
+
+<script>
+document.getElementById("showNewBtn")?.addEventListener("click", function () {
+    document.getElementById("savedAddressSection").style.display = "none";
+    document.getElementById("newAddressForm").style.display = "block";
+});
+
+document.getElementById("backBtn")?.addEventListener("click", function () {
+    document.getElementById("savedAddressSection").style.display = "block";
+    document.getElementById("newAddressForm").style.display = "none";
+});
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'shop/basic.html' %}
+{% block body %}
+
+<style>
+    .edit-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 25px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .edit-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 26px;
+        color: #333;
+    }
+
+    .edit-container label {
+        font-weight: 600;
+        color: #444;
+    }
+
+    .input-box {
+        width: 100%;
+        padding: 10px 12px;
+        margin-top: 5px;
+        margin-bottom: 18px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        outline: none;
+        font-size: 15px;
+        transition: 0.3s;
+    }
+
+    .input-box:focus {
+        border-color: #6a5acd;
+        box-shadow: 0 0 4px rgba(106,90,205,0.4);
+    }
+
+    .update-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        background: #6a5acd;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .update-btn:hover {
+        background: #5848c2;
+    }
+</style>
+
+<div class="edit-container">
+    <h2>Edit Product</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Name:</label>
+        <input type="text" name="product_name" value="{{ product.product_name }}" class="input-box">
+
+        <label>Price:</label>
+        <input type="number" name="price" value="{{ product.price }}" class="input-box">
+
+        <label>Category:</label>
+        <input type="text" name="category" value="{{ product.category }}" class="input-box">
+
+        <button type="submit" class="update-btn">Update Product</button>
+    </form>
+</div>
+
+{% endblock %}

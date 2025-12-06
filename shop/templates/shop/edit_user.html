@@ -1,0 +1,90 @@
+{% extends 'shop/basic.html' %}
+{% block body %}
+
+<style>
+    .edit-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 25px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .edit-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 26px;
+        color: #333;
+    }
+
+    .edit-container label {
+        font-weight: 600;
+        color: #444;
+    }
+
+    .input-box {
+        width: 100%;
+        padding: 10px 12px;
+        margin-top: 5px;
+        margin-bottom: 18px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .input-box:focus {
+        border-color: #6a5acd;
+        box-shadow: 0 0 4px rgba(106,90,205,0.4);
+    }
+
+    .checkbox-row {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .save-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        background: #6a5acd;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .save-btn:hover {
+        background: #5848c2;
+    }
+</style>
+
+<div class="edit-container">
+    <h2>Edit User</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Username:</label>
+        <input type="text" name="username" value="{{ user_obj.username }}" class="input-box">
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ user_obj.email }}" class="input-box">
+
+        <div class="checkbox-row">
+            <label>Is Staff:</label>
+            <input type="checkbox" name="is_staff" {% if user_obj.is_staff %}checked{% endif %}>
+        </div>
+
+        <button type="submit" class="save-btn">Save Changes</button>
+    </form>
+</div>
+
+{% endblock %}

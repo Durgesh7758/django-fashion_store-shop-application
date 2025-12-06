@@ -1,0 +1,122 @@
+{% extends 'shop/basic.html' %}
+
+{% block css %}
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f8f8;
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* horizontal center */
+    align-items: center;     /* vertical center */
+    padding: 20px;
+}
+
+.login-card {
+    width: 400px;
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.login-card h2 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.login-card label {
+    font-weight: 600;
+    color: #444;
+}
+
+.login-card .form-control {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.login-card .form-control:focus {
+    border-color: #6a5acd;
+    box-shadow: 0 0 4px rgba(106,90,205,0.4);
+}
+
+.login-card .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background: #6a5acd;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-card .btn:hover {
+    background: #5848c2;
+}
+
+.login-card a {
+    color: #6a5acd;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.login-card a:hover {
+    text-decoration: underline;
+}
+
+.login-card p {
+    font-size: 0.95rem;
+    margin-top: 15px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <div class="login-card">
+    <h2>Login</h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}  
+
+      <label>Username or Email</label>
+      <input type="text" name="username" class="form-control" placeholder="Enter username or email" required>
+
+      <label>Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+      <a href="{% url 'shop:password_reset' %}" class="d-block mt-1">Forgot Password?</a>
+
+      <button type="submit" class="btn mt-2">Login</button>
+    </form>
+
+    <p>
+      Don’t have an account? 
+      <a href="{% url 'shop:register' %}">Register here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

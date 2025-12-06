@@ -1,0 +1,175 @@
+{% extends 'shop/basic.html' %}
+
+{% block css %}
+<style>
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media(max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  transition: 0.3s;
+  background: white;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.product-img {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;   /* SAME IMAGE SIZE FIXED */
+  background: #f8f8f8;
+  border-radius: 6px;
+}
+
+.product-name {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #222;
+}
+
+.product-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.price {
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.view-btn {
+  padding: 5px 10px;
+  border: 1px solid #222;
+  color: #222;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.add-btn {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: none;
+  background: #222;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.product-desc {
+    max-height: 40px;       /* fixed initial height */
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.4s ease;
+}
+
+.product-desc.expanded {
+    max-height: 200px;      /* max height on show more */
+}
+
+.show-more-link {
+    color: #222;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    margin-left: 4px;
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">All Products</h2>
+
+    <div class="product-grid">
+        {% for product in all_products %}
+        <div class="product-card">
+            <div id="productCarousel{{ product.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="/media/{{ product.image }}" class="product-img" alt="{{ product.product_name }}">
+                    </div>
+                    {% for img in product.images.all %}
+                    <div class="carousel-item">
+                        <img src="{{ img.image.url }}" class="product-img">
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+                <button class="carousel-control-prev" type="button" 
+                    data-bs-target="#productCarousel{{ product.id }}" 
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button" 
+                    data-bs-target="#productCarousel{{ product.id }}" 
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+
+            </div>
+
+            <h3 class="product-name">{{ product.product_name }}</h3>
+            <p class="product-desc">
+                {{ product.desc }}
+                {% if product.desc|length > 60 %}
+                    <span class="show-more-link">Show More</span>
+                {% endif %}
+            </p>
+
+            <div class="price-row">
+                <span class="price">₹{{ product.price }}</span>
+                <a href="{% url 'shop:product_detail' product.id %}" class="view-btn">View</a>
+          </div>
+        <a href="{% url 'shop:add_to_cart' product.id %}" class="add-btn">Add to Cart</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const showMoreLinks = document.querySelectorAll(".show-more-link");
+
+    showMoreLinks.forEach(link => {
+        link.addEventListener("click", function() {
+            const desc = this.parentElement; // product-desc
+            desc.classList.toggle("expanded");
+            this.textContent = desc.classList.contains("expanded") ? "Show Less" : "Show More";
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends 'shop/basic.html' %}
+
+{% block css %}
+<style>
+/* Product card styles */
+.card-img-top {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+}
+.carousel-indicators [data-bs-target] {
+    background-color: #ff4800;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(245, 240, 204, 0.7);
+}
+
+/* Sidebar styles */
+/* Fix sidebar right-side gap */
+.sidebar {
+    padding: 10px 12px;
+    background-color: #fdf6f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Remove Bootstrap list group extra padding + border */
+.sidebar ul li {
+    padding: 0 !important;
+    margin: 4px 0;
+    border: none !important;
+}
+
+.sidebar ul li a {
+    padding: 8px 10px;
+    display: block;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #000;
+}
+
+/* tighter spacing between category + price */
+.sidebar h5 {
+    margin-bottom: 10px;
+}
+
+.list-group {
+    margin-bottom: 10px !important;
+}
+
+.sidebar ul li a:hover {
+    background-color: #000000ff;
+    color: #fff !important;
+    text-decoration: none;
+    transform: translateX(3px);
+}
+
+.sidebar ul li a.selected {
+    background-color: #d93800;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.reset-filter {
+    display: inline-block;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #ff0000ff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.reset-filter:hover {
+    background-color: #000000ff;
+}
+
+.category-title {
+  font-size: 26px;
+  font-weight: bold;
+  margin: 25px 0 10px;
+  color: #333;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  transition: 0.3s;
+  background: white;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.product-img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  background: #f8f8f8;
+  border-radius: 6px;
+} 
+
+.product-name {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #222;
+}
+
+.product-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.price {
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.view-btn {
+  padding: 5px 10px;
+  border: 1px solid #000000ff;
+  color: #000000ff;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.add-btn {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: none;
+  background: #222;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #000;
+}
+
+.btn-secondary {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+.btn-secondary:hover {
+    background-color: #333 !important;
+    border-color: #333 !important;
+    color: #fff !important;
+}
+.list-group-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px !important;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.list-group-item:hover {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+.list-group-item:hover label {
+    color: #fff !important;
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div class="container mt-4">
+  <div class="row">
+
+    <!-- Sidebar: Filters -->
+    <div class="col-md-3 sidebar">
+      <h5>Filter By Category</h5>
+      
+        <form method="GET" id="filterForm">
+
+    <ul class="list-group mb-3">
+        {% for category in categories %}
+        <li class="list-group-item" style="border:none;">
+            <input type="checkbox" name="category" value="{{ category }}" 
+                   {% if category in category_filter %}checked{% endif %}
+                   onclick="document.getElementById('filterForm').submit();">
+            <label>{{ category }}</label>
+        </li>
+        {% endfor %}
+    </ul>
+
+        <!-- Price Filter -->
+        <h5>Filter by Price</h5>
+        <ul class="list-group mb-3">
+            {% for label, range in price_ranges.items %}
+            <li class="list-group-item" style="border:none;">
+                <input type="radio" name="price" value="{{ range }}"
+                      {% if price_filter == range %}checked{% endif %}
+                      onclick="document.getElementById('filterForm').submit();">
+                <label>{{ label }}</label>
+            </li>
+            {% endfor %}
+        </ul>
+       </form> 
+      <a href="/shop/" class="btn btn-secondary">Reset Filter</a>
+    </div>
+
+    <!-- Products Column -->
+    <div class="col-md-9">
+      {% for products, range, nSlides in allprods %}
+      <h2 class="category-title">{{ products.0.category }}</h2>
+      <div class="product-grid">
+          {% for product in products %}
+          <div class="product-card">
+                <div id="productCarousel{{ product.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+
+                    <!-- First image -->
+                    <div class="carousel-item active">
+                        <img src="/media/{{ product.image }}" class="product-img" alt="{{ product.product_name }}">
+                    </div>
+
+                    <!-- Extra images -->
+                    {% for img in product.images.all %}
+                    <div class="carousel-item">
+                        <img src="{{ img.image.url }}" class="product-img" alt="{{ product.product_name }}">
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel{{ product.id }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel{{ product.id }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            </div>
+
+              <div class="product-info">
+                  <h3 class="product-name">{{ product.product_name }}</h3>
+
+                  <p class="product-desc">
+                      {{ product.desc|slice:":60" }}...
+                  </p>
+
+                  <div class="price-row">
+                      <span class="price">₹{{ product.price }}</span>
+                      <a href="{% url 'shop:product_detail' product.id %}" class="view-btn">View</a>
+                  </div>
+
+                  <a href="{% url 'shop:add_to_cart' product.id %}" class="add-btn">Add to Cart</a>
+              </div>
+
+          </div>
+          {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

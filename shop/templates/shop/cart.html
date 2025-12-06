@@ -1,0 +1,68 @@
+{% extends 'shop/basic.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container my-4">
+  <h2>Your Cart</h2>
+
+  {% if cart_items %}
+    <table class="table table-bordered mt-3">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Size</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td>
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.product_name }}" width="80">
+          </td>
+
+          <td>{{ item.product.product_name }}</td>
+
+          <!-- 👇 Size Change Dropdown -->
+          <td>
+            <form action="{% url 'shop:update_cart_size' item.id %}" method="POST">
+              {% csrf_token %}
+              <select name="size" class="form-select" onchange="this.form.submit()">
+                <option value="">Select</option>
+                <option value="S" {% if item.size == 'S' %}selected{% endif %}>S</option>
+                <option value="M" {% if item.size == 'M' %}selected{% endif %}>M</option>
+                <option value="L" {% if item.size == 'L' %}selected{% endif %}>L</option>
+                <option value="XL" {% if item.size == 'XL' %}selected{% endif %}>XL</option>
+              </select>
+            </form>
+          </td>
+
+          <td>
+            <a href="{% url 'shop:decrease_quantity' item.id %}" class="btn btn-sm btn-danger">-</a>
+            {{ item.quantity }}
+            <a href="{% url 'shop:increase_quantity' item.id %}" class="btn btn-sm btn-success">+</a>
+          </td>
+
+          <td>₹{{ item.product.price }}</td>
+
+          <td>₹{{ item.product.price|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h4>Total: ₹{{ total_price }}</h4>
+
+    <a href="{% url 'shop:checkout' %}" class="btn btn-success mt-3 w-100">Proceed to Checkout</a>
+    <a href="{% url 'shop:ShopHome' %}" class="btn btn-secondary mt-2 w-100">Continue Shopping</a>
+
+  {% else %}
+    <p>Your cart is empty.</p>
+    <a href="{% url 'shop:ShopHome' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'shop/basic.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container my-5">
+  <div class="row">
+    <!-- Product Images Gallery -->
+    <div class="col-md-6">
+      <!-- Main Image -->
+      <div class="text-center">
+        <img id="mainImage" src="{{ product.image.url }}" class="img-fluid rounded shadow" alt="{{ product.product_name }}">
+      </div>
+
+      <!-- Thumbnails -->
+      <div class="d-flex flex-wrap justify-content-center mt-3">
+        <img src="{{ product.image.url }}" class="img-thumbnail m-1 thumb-img" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage(this)">
+        {% for img in product.images.all %}
+          <img src="{{ img.image.url }}" class="img-thumbnail m-1 thumb-img" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage(this)">
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-md-6">
+      <h2>{{ product.product_name }}</h2>
+      <p class="text-muted">{{ product.category }} > {{ product.subcategory }}</p>
+      <h4 class="text-danger">₹ {{ product.price }}</h4>
+      <p>{{ product.desc }}</p>
+
+      <!-- Size & Color Options -->
+      <!-- Size & Color Options -->
+<div class="mt-4">
+  
+  <h5>Select Size:</h5>
+
+  <form method="POST" action="{% url 'shop:add_to_cart' product.id %}">
+    {% csrf_token %}
+
+    <div class="btn-group" role="group" aria-label="Size options">
+      <input type="radio" class="btn-check" name="size" id="sizeS" value="S" required>
+      <label class="btn btn-outline-dark" for="sizeS">S</label>
+
+      <input type="radio" class="btn-check" name="size" id="sizeM" value="M">
+      <label class="btn btn-outline-dark" for="sizeM">M</label>
+
+      <input type="radio" class="btn-check" name="size" id="sizeL" value="L">
+      <label class="btn btn-outline-dark" for="sizeL">L</label>
+
+      <input type="radio" class="btn-check" name="size" id="sizeXL" value="XL">
+      <label class="btn btn-outline-dark" for="sizeXL">XL</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg mt-3 w-100">
+      Add to Cart
+    </button>
+  </form>
+
+ <form method="POST" action="{% url 'shop:buy_now' product.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="size" id="selectedSize">
+
+    <button type="submit" class="btn btn-warning btn-lg mt-3 w-100">
+        Buy Now
+    </button>
+</form>
+
+</div>
+
+    <!-- Product Rating -->
+    <div class="col-12 mt-5">
+      <h5>Rate this Product:</h5>
+      <form method="POST" action="{% url 'shop:add_rating' product.id %}">
+          {% csrf_token %}
+          <div class="star-rating">
+              <input type="radio" id="5-stars" name="rating" value="5">
+              <label for="5-stars" class="star">&#9733;</label>
+              
+              <input type="radio" id="4-stars" name="rating" value="4">
+              <label for="4-stars" class="star">&#9733;</label>
+
+              <input type="radio" id="3-stars" name="rating" value="3">
+              <label for="3-stars" class="star">&#9733;</label>
+
+              <input type="radio" id="2-stars" name="rating" value="2">
+              <label for="2-stars" class="star">&#9733;</label>
+
+              <input type="radio" id="1-star" name="rating" value="1">
+              <label for="1-star" class="star">&#9733;</label>
+          </div>
+
+          <div class="mb-2 mt-2">
+              <textarea name="review" class="form-control" placeholder="Write your review (optional)"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success mt-2">Submit Rating</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="col-12 mt-4">
+  <h5>Customer Reviews:</h5>
+  {% for c in comments %}
+  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px; border-radius:5px;">
+      <strong>{{ c.user.username }}</strong> rated {{ c.rating }}/5
+      <p>{{ c.review }}</p>
+      <small>{{ c.created_at|date:"d M Y H:i" }}</small>
+  </div>
+  {% empty %}
+  <p>No reviews yet. Be the first to review!</p>
+  {% endfor %}
+</div>
+
+<!-- Styles -->
+<style>
+/* Rating stars */
+.star-rating {
+  direction: rtl;
+  font-size: 2rem;
+}
+.star-rating input[type="radio"] {
+  display: none;
+}
+.star-rating label.star {
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.star-rating input[type="radio"]:checked ~ label.star,
+.star-rating label.star:hover,
+.star-rating label.star:hover ~ label.star {
+  color: #ffca08;
+}
+
+/* Color circles */
+.circle-option {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.btn-check:checked + .circle-option {
+  border-color: #000;
+  transform: scale(1.1);
+}
+</style>
+
+<!-- Image change script -->
+<script>
+  // When size radio button is clicked → update hidden input for Buy Now
+  const sizeInputs = document.querySelectorAll("input[name='size']");
+  const hiddenBuySize = document.getElementById("selectedSize");
+
+  sizeInputs.forEach(inp => {
+      inp.addEventListener("change", function() {
+          hiddenBuySize.value = this.value;
+      });
+  });
+</script>
+
+{% endblock %}

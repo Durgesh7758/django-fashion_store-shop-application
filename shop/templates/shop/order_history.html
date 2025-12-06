@@ -1,0 +1,53 @@
+{% extends 'shop/basic.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container my-4">
+    <h2>Your Orders</h2>
+    {% if orders %}
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Tracking Number</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.ordered_on|date:"d M Y H:i" }}</td>
+                <td>₹{{ order.total_amount }}</td>
+                <td>
+                    {% if order.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">{{ order.status }}</span>
+                    {% elif order.status == 'Processing' %}
+                        <span class="badge bg-info text-dark">{{ order.status }}</span>
+                    {% elif order.status == 'Shipped' %}
+                        <span class="badge bg-primary">{{ order.status }}</span>
+                    {% elif order.status == 'Delivered' %}
+                        <span class="badge bg-success">{{ order.status }}</span>
+                    {% elif order.status == 'Cancelled' %}
+                        <span class="badge bg-danger">{{ order.status }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ order.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ order.tracking_number }}</td>
+                <td>
+                    <a href="{% url 'shop:order_detail' order.id %}" class="btn btn-sm btn-primary">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have no orders yet.</p>
+    <a href="{% url 'shop:ShopHome' %}" class="btn btn-primary mt-3">Shop Now</a>
+    {% endif %}
+</div>
+{% endblock %}

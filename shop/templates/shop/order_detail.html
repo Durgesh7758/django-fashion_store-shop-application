@@ -1,0 +1,77 @@
+{% extends 'shop/basic.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container my-4">
+    <h2>Order #{{ order.id }}</h2>
+
+    <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+
+    <!-- Status Badge -->
+    {% if order.status == 'Pending' %}
+        <span class="badge bg-warning text-dark">{{ order.status }}</span>
+    {% elif order.status == 'Processing' %}
+        <span class="badge bg-info text-dark">{{ order.status }}</span>
+    {% elif order.status == 'Shipped' %}
+        <span class="badge bg-primary">{{ order.status }}</span>
+    {% elif order.status == 'Delivered' %}
+        <span class="badge bg-success">{{ order.status }}</span>
+    {% elif order.status == 'Cancelled' %}
+        <span class="badge bg-danger">{{ order.status }}</span>
+    {% else %}
+        <span class="badge bg-secondary">{{ order.status }}</span>
+    {% endif %}
+
+    <!-- Status Update Form for Pending Orders -->
+    {% if order.status == 'Pending' %}
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        <label for="status"><strong>Change Status:</strong></label>
+        <select name="status" id="status" class="form-select w-auto d-inline-block ms-2">
+            <option value="Processing">Processing</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+        <button type="submit" class="btn btn-success ms-2">Update</button>
+    </form>
+    {% endif %}
+
+    <p class="mt-2"><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+
+    <table class="table table-bordered mt-3">
+    <thead class="table-light">
+        <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Size</th>           <!-- ✅ NEW -->
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in order_items %}
+        <tr>
+            <td>
+                <img src="{{ item.product.image.url }}" width="80" alt="{{ item.product.product_name }}">
+            </td>
+
+            <td>{{ item.product.product_name }}</td>
+
+            <td>
+                <strong>{{ item.size }}</strong>   <!-- ✅ SHOW SELECTED SIZE -->
+            </td>
+
+            <td>{{ item.quantity }}</td>
+
+            <td>₹{{ item.product.price }}</td>
+
+            <td>₹{{ item.subtotal }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <a href="{% url 'shop:ShopHome' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+</div>
+{% endblock %}
